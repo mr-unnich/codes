@@ -1,0 +1,108 @@
+import java.util.Scanner;
+
+public class PuzzleSolver {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the number of rows: ");
+        int rows = scanner.nextInt();
+
+        System.out.print("Enter the number of columns: ");
+        int columns = scanner.nextInt();
+
+        int[][] matrix = new int[rows][columns];
+
+        System.out.println("Enter the matrix elements:");
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < columns; c++) {
+                matrix[r][c] = scanner.nextInt();
+            }
+        }
+
+        System.out.print("Enter the maximum number of moves: ");
+        int maxMoves = scanner.nextInt();
+
+        int currentRow = 0;
+        int currentCol = 0;
+        int moves = 0;
+
+        solvePuzzle(matrix, currentRow, currentCol, moves, maxMoves);
+
+        scanner.close();
+    }
+
+    public static void solvePuzzle(int[][] matrix, int currentRow, int currentCol, int moves, int maxMoves) {
+        if (moves > maxMoves) {
+            return;
+        }
+
+        int[] nextPosition = findEmptyCell(matrix);
+
+        int newRow = nextPosition[0];
+        int newCol = nextPosition[1];
+
+        if (newRow == -1 || newCol == -1) {
+            // No empty cell found
+            return;
+        }
+
+        if (currentCol > 0) {
+            System.out.println("Move " + moves + ": Left");
+            int[][] newMatrix = swap(matrix, currentRow, currentCol, currentRow, currentCol - 1);
+            printMatrix(newMatrix);
+            solvePuzzle(newMatrix, currentRow, currentCol - 1, moves + 1, maxMoves);
+        }
+
+        if (currentCol < matrix[0].length - 1) {
+            System.out.println("Move " + moves + ": Right");
+            int[][] newMatrix = swap(matrix, currentRow, currentCol, currentRow, currentCol + 1);
+            printMatrix(newMatrix);
+            solvePuzzle(newMatrix, currentRow, currentCol + 1, moves + 1, maxMoves);
+        }
+
+        if (currentRow > 0) {
+            System.out.println("Move " + moves + ": Up");
+            int[][] newMatrix = swap(matrix, currentRow, currentCol, currentRow - 1, currentCol);
+            printMatrix(newMatrix);
+            solvePuzzle(newMatrix, currentRow - 1, currentCol, moves + 1, maxMoves);
+        }
+
+        if (currentRow < matrix.length - 1) {
+            System.out.println("Move " + moves + ": Down");
+            int[][] newMatrix = swap(matrix, currentRow, currentCol, currentRow + 1, currentCol);
+            printMatrix(newMatrix);
+            solvePuzzle(newMatrix, currentRow + 1, currentCol, moves + 1, maxMoves);
+        }
+    }
+
+    public static int[] findEmptyCell(int[][] matrix) {
+        for (int row = 0; row < matrix.length; row++) {
+            for (int col = 0; col < matrix[0].length; col++) {
+                if (matrix[row][col] == 0) {
+                    return new int[]{row, col};
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
+    public static int[][] swap(int[][] matrix, int row1, int col1, int row2, int col2) {
+        int[][] newMatrix = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            System.arraycopy(matrix[i], 0, newMatrix[i], 0, matrix[i].length);
+        }
+        int temp = newMatrix[row1][col1];
+        newMatrix[row1][col1] = newMatrix[row2][col2];
+        newMatrix[row2][col2] = temp;
+        return newMatrix;
+    }
+
+    public static void printMatrix(int[][] matrix) {
+        for (int[] row : matrix) {
+            for (int cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println();
+        }
+    }
+}
